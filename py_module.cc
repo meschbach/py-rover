@@ -133,7 +133,7 @@ static struct PyModuleDef pathfinder_module = {
 };
 
 PyMODINIT_FUNC
-PyInit__pathfinder(void)
+PyInit__rover(void)
 {
     auto module = PyModule_Create( &pathfinder_module );
 		import_array()
