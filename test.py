@@ -1,4 +1,4 @@
-import _pathfinder
+import _rover
 import numpy as np
 
 terrian = np.array([[0,0,0],[1,0,1], [0,1,0]])
