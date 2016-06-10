@@ -7,7 +7,7 @@ if "PYROVER_CFLAGS" in os.environ:
 else:
     native_cflags = ["-std=c++1y"]
 
-print "[Rover] Building native extensions using " + str(native_cflags)
+print("[Rover] Building native extensions using " + str(native_cflags))
 
 setup(
     ext_modules=[Extension("_rover", ["py_module.cc"], extra_compile_args=native_cflags)],
