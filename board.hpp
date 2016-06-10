@@ -34,8 +34,8 @@ inline void assert_in_range( const T high, const T actual, const char* name ) {
  * 2D Board
  **************************************/
 struct Board {
-	int width;
-	int height;
+	int width = 0;
+	int height = 0;
 	std::vector<Point> walls;
 
     void set_wall( int x, int y ){
