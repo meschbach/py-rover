@@ -95,6 +95,7 @@ struct AStar {
 			auto current = context.pop_oustanding();
 
 			if( current == goal ){
+			    cout << "Found goal" << endl;
                 return build_path( context.cameFrom, current );
 			}
 
@@ -104,17 +105,23 @@ struct AStar {
 				Point mask = *neighbors_mask;
 				Point neighbor = current + mask;
 
-				if( !board.is_within( neighbor ) || board.has_wall_at( neighbor ) ) { continue; }
+                cout << "???\tNeighbor " << neighbor << endl;
+				if( !board.is_within( neighbor ) || board.has_wall_at( neighbor ) ) {
+				    cout << "---\tRejected beacuse wall or out of bounds" << endl;
+				    continue;
+                }
 
 				auto tentative_g_score = actual_score[current] + heuristic(current, neighbor);
 				if( context.is_closed(neighbor) ){
 					auto current_score = actual_score[neighbor];
 					if( tentative_g_score >= current_score ){
+					    cout << "---\tRejected because worse score and closed" << endl;
 						continue;
 					}
 				}
 
 				if( neighbor_has_lower_score( tentative_g_score, neighbor,  actual_score ) || !context.point_outstanding( neighbor ) ){
+				    cout << "+++\tAdding " << neighbor << endl;
 				    context.came_from( current, neighbor);
 					actual_score[ neighbor ] = tentative_g_score;
 					guessed_score[ neighbor ] = tentative_g_score + heuristic( neighbor, goal );

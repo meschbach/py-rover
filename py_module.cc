@@ -26,6 +26,7 @@ extern "C" {
 //TODO: Error handling
 static char astar_docstring[] = "Finds path using a variant of the A* algorithm";
 static PyObject* py_astar( PyObject* self, PyObject *args ){
+	try {
 	PyObject* terrian;
 	int current_x, current_y, target_x, target_y;
 
@@ -50,7 +51,7 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	/*
 	 * Construct the board
 	 */
-//    cout << "setting up the board" << endl;
+	cout << "setting up the board" << endl;
 	Board board;
 	board.width = column_count;
 	board.height = row_count;
@@ -67,11 +68,11 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	 * Run algorithm
 	 */
 	AStar pathfinding;
-//	cout << "Starting pathfinding" << endl;
+	cout << "Starting pathfinding" << endl;
 
 	std::vector<Point> path = pathfinding.findFor(board, Point(current_x,current_y), Point(target_x,target_y));
 
-//	cout << "Ending pathfinding" << endl;
+	cout << "Ending pathfinding" << endl;
 
     //TOOD: Optimize for setting each element instead of appending
     PyObject* results = PyList_New(0);
@@ -97,6 +98,10 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	}
 	Py_INCREF(results);
 	return results;
+	}catch(...){
+		cerr << "FATAL: Unexpected exception encountered" << endl;
+		abort();
+	}
 }
 
 //#define PATHFINDER_USE_PY2
