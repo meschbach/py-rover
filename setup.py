@@ -5,7 +5,7 @@ import os
 if "PYROVER_CFLAGS" in os.environ:
     native_cflags = os.environ["PYROVER_CFLAGS"].split(" ")
 else:
-    native_cflags = ["-std=c++1y"]
+    native_cflags = ["-std=c++1y -g3 -pg"]
 
 print("[Rover] Building native extensions using " + str(native_cflags))
 
