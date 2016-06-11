@@ -53,7 +53,7 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	/*
 	 * Construct the board
 	 */
-	cout << "setting up the board" << endl;
+//	cout << "setting up the board" << endl;
 	Board board;
 	board.width = column_count;
 	board.height = row_count;
@@ -71,12 +71,12 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	 */
 	AStar pathfinding;
 	Point goal(target_x,target_y), current(current_x,current_y);
-	cout << "Starting pathfinding from "<< current << " to " << goal << endl;
-	cout << board << endl;
+//	cout << "Starting pathfinding from "<< current << " to " << goal << endl;
+//	cout << board << endl;
 
 	std::vector<Point> path = pathfinding.findFor(board, current, goal);
 
-	cout << "Ending pathfinding" << endl;
+//	cout << "Ending pathfinding" << endl;
 
     //TOOD: Optimize for setting each element instead of appending
     PyObject* results = PyList_New(0);
@@ -122,7 +122,7 @@ static PyMethodDef module_methods[] = {
 
 
 PyMODINIT_FUNC init_pathfinder( void ){
-	cout << "[Pathfinder] Initializing" << endl;
+//	cout << "[Pathfinder] Initializing" << endl;
 	PyObject *module = Py_InitModule( "_pathfinder", module_methods );
 	if( module == NULL ){ return NULL; }
 

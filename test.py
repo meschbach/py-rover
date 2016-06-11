@@ -1,6 +1,6 @@
 import _rover
 import numpy as np
-
+#
 # terrian = np.array([
 #     [0,0,0,0,0,0],
 #     [0,1,1,1,1,0],
@@ -12,6 +12,7 @@ import numpy as np
 # ])
 # result = _rover.a_star( terrian, (2,2), (3,4) )
 # print(str(result))
+
 #
 # terrian = np.array([
 #     [0,0,0,0,0,0,0,0],
