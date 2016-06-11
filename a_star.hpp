@@ -1,31 +1,35 @@
 /*
  *
  */
+#include<algorithm>
+#include<iostream>
 #include<iomanip>
 #include<map>
+#include<set>
 #include<stack>
+#include<queue>
 #include<vector>
-#include<algorithm>
 
 #include "board.hpp"
+#include "point.hpp"
 
-//TODO: Scope this properly
-using namespace std;
-using namespace pathfinder;
+namespace rover {
 
 /***************************************
  *
  **************************************/
-vector<Point> neighbors_mask = { {0, 1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1} };
+std::vector<Point> neighbors_mask = { {0, 1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1} };
 
 struct AStarContext {
-    vector<Point> close_set;
-    vector< pair<int,Point> > outstanding_points;
-    map<Point,Point> cameFrom;
+    std::set<Point> close_set;
+    std::set<Point> outstanding_index;
+    std::priority_queue< std::pair<int,Point> > outstanding_points;
+    std::map<Point,Point> cameFrom;
 
     void outstanding_point( Point where, int guessed_score)  {
         auto outstanding = make_pair(guessed_score, where);
-        outstanding_points.push_back(outstanding);
+        outstanding_points.push(outstanding);
+        outstanding_index.insert(where);
     }
 
     bool has_outstanding_points() const {
@@ -33,28 +37,23 @@ struct AStarContext {
     }
 
     Point pop_oustanding() {
-        auto score_point_pair = outstanding_points.back();
+        auto score_point_pair = outstanding_points.top();
         auto point = score_point_pair.second;
-        outstanding_points.pop_back();
+        outstanding_points.pop();
+        outstanding_index.erase(point);
         return point;
     }
 
     bool point_outstanding(Point where) const {
-		for( auto it = outstanding_points.begin(); it != outstanding_points.end(); it++ ){
-			auto pair = *it;
-			if( pair.second == where ){
-				return true;
-			}
-		}
-		return false;
+        return outstanding_index.find(where) != outstanding_index.end();
     }
 
     void mark_closed( Point where ){
-        close_set.push_back(where);
+        close_set.insert(where);
     }
 
     bool is_closed( Point where) const {
-        return find( close_set.begin(), close_set.end(), where ) != close_set.end();
+        return close_set.find(where) != close_set.end();
     }
 
     void came_from( Point from, Point to ) {
@@ -69,7 +68,7 @@ struct AStar {
 		return (first*first) + (second*second);  //Taxi cab distance, squared
 	}
 
-	std::vector<Point> build_path(const map<Point,Point>& cameFrom, Point current) const {
+	std::vector<Point> build_path(const std::map<Point,Point>& cameFrom, Point current) const {
         std::vector<Point> data;
         while( cameFrom.find( current ) != cameFrom.end() ) {
             data.push_back( current );
@@ -81,22 +80,45 @@ struct AStar {
 	}
 
 	std::vector<Point> findFor( Board &board, const Point start, const Point goal ) {
+	    unsigned int timeToLive = 1 << 31;
+	    if( board.has_wall_at(start)) {
+//	        std::cout << "Wall at starting point " << start << std::endl;
+	        return std::vector<Point>();
+	    }
+	    if( board.has_wall_at(goal)){
+//	        std::cout << "Wall at starting point " << goal << std::endl;
+	        return std::vector<Point>();
+	    }
+
+	    if( goal == start ){
+	        return std::vector<Point>();
+	    }
+
 	    AStarContext context;
-		vector<Point> neighbors = neighbors_mask;
-		map<Point,int> actual_score;
+		std::vector<Point> neighbors = neighbors_mask;
+		std::map<Point,int> actual_score;
 		actual_score[ start ] = 0;
 
-		map<Point,int> guessed_score;
+		std::map<Point,int> guessed_score;
 		guessed_score[ start ] = heuristic( start, goal );
 
         context.outstanding_point( start, guessed_score[start]);
 
 		while( context.has_outstanding_points()){
+            if( timeToLive == 0 ){
+                return std::vector<Point>();
+            }else{
+                timeToLive--;
+            }
+
 			auto current = context.pop_oustanding();
 
 			if( current == goal ){
-			    cout << "Found goal" << endl;
                 return build_path( context.cameFrom, current );
+			}
+
+			if( board.has_wall_at(current)){
+			    continue;
 			}
 
             context.mark_closed(current);
@@ -105,9 +127,7 @@ struct AStar {
 				Point mask = *neighbors_mask;
 				Point neighbor = current + mask;
 
-                cout << "???\tNeighbor " << neighbor << endl;
 				if( !board.is_within( neighbor ) || board.has_wall_at( neighbor ) ) {
-				    cout << "---\tRejected beacuse wall or out of bounds" << endl;
 				    continue;
                 }
 
@@ -115,13 +135,11 @@ struct AStar {
 				if( context.is_closed(neighbor) ){
 					auto current_score = actual_score[neighbor];
 					if( tentative_g_score >= current_score ){
-					    cout << "---\tRejected because worse score and closed" << endl;
 						continue;
 					}
 				}
 
 				if( neighbor_has_lower_score( tentative_g_score, neighbor,  actual_score ) || !context.point_outstanding( neighbor ) ){
-				    cout << "+++\tAdding " << neighbor << endl;
 				    context.came_from( current, neighbor);
 					actual_score[ neighbor ] = tentative_g_score;
 					guessed_score[ neighbor ] = tentative_g_score + heuristic( neighbor, goal );
@@ -132,7 +150,7 @@ struct AStar {
 		return std::vector<Point>();
 	}
 
-	bool neighbor_has_lower_score( int score, Point neighbor, map<Point,int> actual_score ) {
+	bool neighbor_has_lower_score( int score, Point neighbor, std::map<Point,int> &actual_score ) {
 		if( actual_score.find( neighbor ) == actual_score.end() ){
 			return true;
 		}
@@ -141,3 +159,5 @@ struct AStar {
 		return replace;
 	}
 };
+
+}

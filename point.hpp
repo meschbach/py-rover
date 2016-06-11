@@ -4,8 +4,9 @@
  *
  */
 #include <algorithm>
+#include <iostream>
 
-namespace pathfinder {
+namespace rover {
 /***************************************
  * 2D Point
  **************************************/
@@ -21,6 +22,6 @@ inline Point operator+( const Point lhs, const Point rhs ){
     return neighbor;
 }
 
-} //::pathfinder
+} //::rover
 
 #endif /* _pathfinder_point_h_ */

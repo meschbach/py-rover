@@ -19,8 +19,8 @@ a_star_tests.o: a_star_tests.cc a_star.hpp
 board_tests.o: board_tests.cc board.hpp
 
 .PHONY: clean python
-python_ext: a_star.hpp py_module.cc
-	rm -f _pathfinder.so
+python_ext: a_star.hpp board.hpp point.hpp py_module.cc
+	rm -fR _rover.so _rover.*.so build
 	CFLAGS="$(CXXFLAGS)" $(PYTHON) setup.py build_ext --inplace
 python: python_ext test.py
 	$(PYTHON) test.py

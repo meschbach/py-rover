@@ -5,8 +5,10 @@
 
 
 #include "a_star.hpp"
+#include "point.hpp"
 
 using namespace std;
+using namespace rover;
 
 template<typename PyType>
 struct PyRef {
@@ -59,7 +61,7 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	    for( size_t column = 0; column < column_count; column++){
 	        long* cell = (long*)PyArray_GETPTR2(*terrian_array, row, column);
 	        if( *cell ){
-	            board.walls.push_back(make_pair<int,int>(column, row));
+	            board.set_wall(column,row);
 	        }
 	    }
 	}
@@ -68,9 +70,11 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	 * Run algorithm
 	 */
 	AStar pathfinding;
-	cout << "Starting pathfinding" << endl;
+	Point goal(target_x,target_y), current(current_x,current_y);
+	cout << "Starting pathfinding from "<< current << " to " << goal << endl;
+	cout << board << endl;
 
-	std::vector<Point> path = pathfinding.findFor(board, Point(current_x,current_y), Point(target_x,target_y));
+	std::vector<Point> path = pathfinding.findFor(board, current, goal);
 
 	cout << "Ending pathfinding" << endl;
 
@@ -80,8 +84,11 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
         cerr << "[EE] failed to allocate list";
         abort();
     }
+
+//    cout << "Resulting path: ";
 	for( auto points = path.begin(); points != path.end(); points++){
 	    Point where = *points;
+//	    cout << " ("<<  where << ") ";
 	    PyObject* point = Py_BuildValue("II", where.first, where.second);
 
 	    if( point == NULL ){

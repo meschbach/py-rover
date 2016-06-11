@@ -11,7 +11,7 @@
 
 #include "point.hpp"
 
-namespace pathfinder {
+namespace rover {
 
 /***************************************
  * Verify Domain
@@ -36,20 +36,20 @@ inline void assert_in_range( const T high, const T actual, const char* name ) {
 struct Board {
 	int width = 0;
 	int height = 0;
-	std::vector<Point> walls;
+	std::set<Point> walls;
 
     void set_wall( int x, int y ){
         assert_in_range( width, x, "x");
         assert_in_range( height, y, "y");
 
-        walls.push_back(std::make_pair(x,y));
+        walls.insert(std::make_pair(x,y));
     }
 
 	bool has_wall_at( const Point& where ) const {
 	    assert_in_range( width, where.first, "x");
 	    assert_in_range( height, where.second, "y");
 
-		return find( walls.begin(), walls.end(), where ) != walls.end();
+	    return walls.find(where) != walls.end();
 	}
 
 	bool has_wall_at( const int x, const int y ) const {
