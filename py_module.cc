@@ -29,83 +29,86 @@ extern "C" {
 static char astar_docstring[] = "Finds path using a variant of the A* algorithm";
 static PyObject* py_astar( PyObject* self, PyObject *args ){
 	try {
-	PyObject* terrian;
-	int current_x, current_y, target_x, target_y;
+        PyObject* terrian;
+        int current_x, current_y, target_x, target_y;
 
-	if( !PyArg_ParseTuple(args, "O(ii)(ii)", &terrian, &current_x, &current_y, &target_x, &target_y ) ){
-	    cout << "Invalid argument format" << endl;
-	    return NULL;
-	}
-	PyRef<PyObject*> terrian_array = PyArray_FROM_OTF(terrian, NPY_INT64, NPY_IN_ARRAY);
-	if( !terrian_array ){
-	    return NULL;
-	}
-	auto dimensions = PyArray_NDIM(*terrian_array);
-	if( dimensions != 2 ){
-	    cout << "Expected dimension == 2, got " << dimensions << endl;
-	    return NULL;
-	}
+        if( !PyArg_ParseTuple(args, "O(ii)(ii)", &terrian, &current_x, &current_y, &target_x, &target_y ) ){
+            cout << "Invalid argument format" << endl;
+            return NULL;
+        }
+        PyRef<PyObject*> terrian_array = PyArray_FROM_OTF(terrian, NPY_INT64, NPY_IN_ARRAY);
+        if( !terrian_array ){
+            return NULL;
+        }
+        auto dimensions = PyArray_NDIM(*terrian_array);
+        if( dimensions != 2 ){
+            cout << "Expected dimension == 2, got " << dimensions << endl;
+            return NULL;
+        }
 
-	auto dims = PyArray_DIMS(*terrian_array);
-	size_t row_count = dims[0];
-	size_t column_count = dims[1];
+        auto dims = PyArray_DIMS(*terrian_array);
+        size_t row_count = dims[0];
+        size_t column_count = dims[1];
 
-	/*
-	 * Construct the board
-	 */
-//	cout << "setting up the board" << endl;
-//	Board board;
-//	board.width = column_count;
-//	board.height = row_count;
-    BitBoard board(column_count, row_count);
-	for( size_t row = 0; row < row_count; row++ ){
-	    for( size_t column = 0; column < column_count; column++){
-	        long* cell = (long*)PyArray_GETPTR2(*terrian_array, row, column);
-	        if( *cell ){
-	            board.set_wall(column,row);
-	        }
-	    }
-	}
+        /*
+         * Construct the board
+         */
+    //	cout << "setting up the board" << endl;
+    //	Board board;
+    //	board.width = column_count;
+    //	board.height = row_count;
+        BitBoard board(column_count, row_count);
+        for( size_t row = 0; row < row_count; row++ ){
+            for( size_t column = 0; column < column_count; column++){
+                long* cell = (long*)PyArray_GETPTR2(*terrian_array, row, column);
+                if( *cell ){
+                    board.set_wall(column,row);
+                }
+            }
+        }
 
-	/*
-	 * Run algorithm
-	 */
-	AStar pathfinding;
-	Point goal(target_x,target_y), current(current_x,current_y);
-//	cout << "Starting pathfinding from "<< current << " to " << goal << endl;
-//	cout << board << endl;
+        /*
+         * Run algorithm
+         */
+        AStar<BitBoard> pathfinding;
+        Point goal(target_x,target_y), current(current_x,current_y);
+    //	cout << "Starting pathfinding from "<< current << " to " << goal << endl;
+    //	cout << board << endl;
 
-	std::vector<Point> path = pathfinding.findFor(board, current, goal);
+        std::vector<Point> path = pathfinding.findFor(board, current, goal);
 
-//	cout << "Ending pathfinding" << endl;
+    //	cout << "Ending pathfinding" << endl;
 
-    //TOOD: Optimize for setting each element instead of appending
-    PyObject* results = PyList_New(0);
-    if( results == NULL ){
-        cerr << "[EE] failed to allocate list";
-        abort();
-    }
+        //TOOD: Optimize for setting each element instead of appending
+        PyObject* results = PyList_New(0);
+        if( results == NULL ){
+            cerr << "[EE] failed to allocate list";
+            abort();
+        }
 
-//    cout << "Resulting path: ";
-	for( auto points = path.begin(); points != path.end(); points++){
-	    Point where = *points;
-//	    cout << " ("<<  where << ") ";
-	    PyObject* point = Py_BuildValue("II", where.first, where.second);
+    //    cout << "Resulting path: ";
+        for( auto points = path.begin(); points != path.end(); points++){
+            Point where = *points;
+    //	    cout << " ("<<  where << ") ";
+            PyObject* point = Py_BuildValue("II", where.first, where.second);
 
-	    if( point == NULL ){
-	        cerr << "Failed to construct point" << endl;
-	        abort();
-	    }
-	    Py_INCREF(point);
+            if( point == NULL ){
+                cerr << "Failed to construct point" << endl;
+                abort();
+            }
+            Py_INCREF(point);
 
-	    int append_result = PyList_Append(results, point);
-	    if( append_result == -1 ){
-	        cerr << "Failed to append point" << endl;
-	        abort();
-	    }
-	}
-	Py_INCREF(results);
-	return results;
+            int append_result = PyList_Append(results, point);
+            if( append_result == -1 ){
+                cerr << "Failed to append point" << endl;
+                abort();
+            }
+        }
+        Py_INCREF(results);
+        return results;
+	}catch(std::exception &e){
+		cerr << "WARNING: Exceptional condition encountered " << e.what() << endl;
+		abort();
 	}catch(...){
 		cerr << "FATAL: Unexpected exception encountered" << endl;
 		abort();

@@ -12,7 +12,7 @@ namespace rover {
  **************************************/
 typedef std::pair<int,int> Point;
 
-inline std::ostream& operator<<( std::ostream& out, Point& p ) {
+inline std::ostream& operator<<( std::ostream& out, const Point& p ) {
 	out << p.first << "," << p.second;
 	return out;
 }
@@ -21,6 +21,17 @@ inline Point operator+( const Point lhs, const Point rhs ){
     Point neighbor = { lhs.first + rhs.first, lhs.second + rhs.second };
     return neighbor;
 }
+
+inline bool operator<( const Point lhs, const Point rhs ){
+    return (lhs.first < rhs.first)
+        && (lhs.second < rhs.second);
+}
+
+struct ComparePoints {
+    bool operator()(const Point &lhs, const Point &rhs ) const {
+        return lhs < rhs;
+    }
+};
 
 } //::rover
 

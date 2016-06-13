@@ -18,7 +18,8 @@ namespace rover {
  **************************************/
 template<typename T>
 inline void assert_in_range( const T low, const T high, const T actual, const char* name ) {
-    if( actual < low || high <= actual) {
+    if( low <= actual && actual < high ){
+    }else{
         std::stringstream message;
         message << "Expected " << low << " <= " << name << " < " << high << "; got " << actual;
         throw std::domain_error(message.str());
@@ -30,6 +31,12 @@ inline void assert_in_range( const T high, const T actual, const char* name ) {
     assert_in_range(0, high, actual, name);
 }
 
+template<typename T>
+inline void assert_point_within( const T x, const T y, const T width, const T height ){
+    assert_in_range( width, x, "x");
+    assert_in_range( height, y, "y");
+}
+
 /***************************************
  * 2D Board
  **************************************/
@@ -38,17 +45,18 @@ struct Board {
 	int height = 0;
 	std::set<Point> walls;
 
+	Board( int aWidth, int aHeight )
+	    : width(aWidth), height( aHeight )
+	    {}
+
     void set_wall( int x, int y ){
-        assert_in_range( width, x, "x");
-        assert_in_range( height, y, "y");
+        assert_point_within( x, y, width, height );
 
         walls.insert(std::make_pair(x,y));
     }
 
 	bool has_wall_at( const Point& where ) const {
-	    assert_in_range( width, where.first, "x");
-	    assert_in_range( height, where.second, "y");
-
+	    assert_point_within( where.first, where.second, width, height );
 	    return walls.find(where) != walls.end();
 	}
 
@@ -56,12 +64,12 @@ struct Board {
 	    return has_wall_at(Point(x,y));
 	}
 
-	bool is_within( const Point p) const {
+	bool is_within( const Point &p) const {
 		int x = p.first;
 		int y = p.second;
 
-		return 0 <= x && x < width
-			&& 0 <= y && y < height;
+		return (0 <= x && x < width)
+			&& (0 <= y && y < height);
 	}
 };
 
@@ -92,30 +100,40 @@ struct BitBoard {
         : width( aWidth ), height( aHeight ), points( aWidth * aHeight, 0)
         {}
 
+    void assert_within( const Point where) const {
+        assert_within(where.first, where.second);
+    }
+
+    void assert_within( const int x, const int y ) const {
+	    assert_in_range( width, x, "x");
+	    assert_in_range( height, y, "y");
+    }
+
     void set_wall( int x, int y ){
-        assert_in_range( width, x, "x");
-        assert_in_range( height, y, "y");
+        assert_within( x, y );
 
         points[horizontal_first_dimension_point(x,y, width, height)] = 1;
     }
 
-	bool has_wall_at( const Point& where ) const {
-	    assert_in_range( width, where.first, "x");
-	    assert_in_range( height, where.second, "y");
+    void set_wall( const Point& where ) {
+        set_wall(where.first, where.second);
+    }
 
+	bool has_wall_at( const Point& where ) const {
 	    return has_wall_at(where.first, where.second);
 	}
 
 	bool has_wall_at( const int x, const int y ) const {
+	    assert_within(x,y);
 	    return points[horizontal_first_dimension_point(x,y, width, height)];
 	}
 
-	bool is_within( const Point p) const {
+	bool is_within( const Point& p) const {
 		int x = p.first;
 		int y = p.second;
 
-		return 0 <= x && x < width
-			&& 0 <= y && y < height;
+		return (0 <= x && x < width)
+			&& (0 <= y && y < height);
 	}
 };
 
