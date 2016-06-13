@@ -54,9 +54,10 @@ static PyObject* py_astar( PyObject* self, PyObject *args ){
 	 * Construct the board
 	 */
 //	cout << "setting up the board" << endl;
-	Board board;
-	board.width = column_count;
-	board.height = row_count;
+//	Board board;
+//	board.width = column_count;
+//	board.height = row_count;
+    BitBoard board(column_count, row_count);
 	for( size_t row = 0; row < row_count; row++ ){
 	    for( size_t column = 0; column < column_count; column++){
 	        long* cell = (long*)PyArray_GETPTR2(*terrian_array, row, column);

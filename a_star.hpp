@@ -79,8 +79,9 @@ struct AStar {
         return data;
 	}
 
-	std::vector<Point> findFor( Board &board, const Point start, const Point goal ) {
-	    unsigned int timeToLive = 1 << 31;
+    template<typename Terrain>
+	std::vector<Point> findFor( Terrain &board, const Point start, const Point goal ) {
+	    unsigned int timeToLive = 1 << 20;
 	    if( board.has_wall_at(start)) {
 //	        std::cout << "Wall at starting point " << start << std::endl;
 	        return std::vector<Point>();
