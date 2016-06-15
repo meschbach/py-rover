@@ -125,7 +125,7 @@ struct AStar {
 	    }
 
 	    AStarContext<Terrain> context(board);
-		std::vector<Point> neighbors = neighbors_mask;
+		const std::vector<Point> neighbors = neighbors_mask;
 		std::map<Point,int> actual_score;
 		actual_score[ start ] = 0;
 
