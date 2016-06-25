@@ -60,6 +60,15 @@ struct BoundedPointLessThanComparator : public std::binary_function<Point,Point,
     }
 };
 
+struct CantorPairing {
+    size_t operator()(const Point& point ) const {
+        size_t x = point.first;
+        size_t y = point.second;
+
+        return ((x + y) * (x + y + 1) >> 1) + x;
+    }
+};
+
 } //::rover
 
 #endif /* _pathfinder_point_h_ */

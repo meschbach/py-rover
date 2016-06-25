@@ -8,6 +8,7 @@
 #include<set>
 #include<stack>
 #include<queue>
+#include<unordered_map>
 #include<vector>
 
 #include "board.hpp"
@@ -41,13 +42,15 @@ inline bool operator>( const ScoredPoint &lhs, const ScoredPoint &rhs ){
     return result;
 }
 
+using PointAssociations = std::unordered_map< Point, Point, CantorPairing >;
+using ScoredPoints = std::unordered_map< Point, int, CantorPairing >;
 
 template<typename Terrain>
 struct AStarContext {
     BitBoard close_set;
     std::set<Point, PointLessThanComparator> outstanding_index;
     std::priority_queue< ScoredPoint, std::vector<ScoredPoint>, std::greater<ScoredPoint> > outstanding_points;
-    std::map<Point,Point, PointLessThanComparator> cameFrom;
+    PointAssociations cameFrom;
 
     AStarContext(const Terrain &board)
         : close_set(board.width, board.height)
@@ -91,9 +94,6 @@ struct AStarContext {
 
 template<typename Terrain>
 struct AStar {
-    using ScoredPoints = std::map< Point, int, PointLessThanComparator >;
-    using PointAssociations = std::map< Point, Point, PointLessThanComparator >;
-
 	int heuristic( const Point& a, const Point& b ) const {
 		int first = b.first - a.first;
 		int second = b.second - a.second;
