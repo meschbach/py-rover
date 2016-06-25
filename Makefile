@@ -12,11 +12,12 @@ PYTHON?=python3
 
 test: tests
 	./tests
-tests: a_star_tests.o board_tests.o
+tests: a_star_tests.o board_tests.o point_tests.o
 	$(CXX) $(LDFLAGS) $^ -o tests
 
 a_star_tests.o: a_star_tests.cc a_star.hpp
 board_tests.o: board_tests.cc board.hpp
+point_tests.o: point_tests.cc point.hpp
 
 .PHONY: clean python
 python_ext: a_star.hpp board.hpp point.hpp py_module.cc

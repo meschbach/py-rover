@@ -7,6 +7,15 @@
 #include <iostream>
 
 namespace rover {
+
+/***************************************
+ * Collapse to a single dimension
+ **************************************/
+template<typename DimensionType = size_t>
+inline DimensionType horizontal_first_dimension_point( DimensionType x, DimensionType y, DimensionType width ){
+    return x + ( y * width );
+}
+
 /***************************************
  * 2D Point
  **************************************/
@@ -27,9 +36,15 @@ inline bool operator<( const Point lhs, const Point rhs ){
         && (lhs.second < rhs.second);
 }
 
-struct ComparePoints {
+struct PointLessThanComparator : public std::binary_function<Point,Point,bool>{
+    int width;
+
+    PointLessThanComparator( int aWidth ) : width(aWidth) {}
+
     bool operator()(const Point &lhs, const Point &rhs ) const {
-        return lhs < rhs;
+        auto lhsPoint = horizontal_first_dimension_point(lhs.first, lhs.second, width) ;
+        auto rhsPoint = horizontal_first_dimension_point(rhs.first, rhs.second, width) ;
+        return lhsPoint < rhsPoint;
     }
 };
 
