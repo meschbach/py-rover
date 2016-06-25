@@ -37,11 +37,23 @@ inline bool operator<( const Point lhs, const Point rhs ){
 }
 
 struct PointLessThanComparator : public std::binary_function<Point,Point,bool>{
+    inline bool operator()(const Point &lhs, const Point &rhs ) const {
+        if( lhs.second < rhs.second ){
+            return true;
+        }else if( lhs.second == rhs.second ){
+            return lhs.first < rhs.first;
+        }else{
+            return false;
+        }
+    }
+};
+
+struct BoundedPointLessThanComparator : public std::binary_function<Point,Point,bool>{
     int width;
 
-    PointLessThanComparator( int aWidth ) : width(aWidth) {}
+    BoundedPointLessThanComparator( int aWidth ) : width(aWidth) {}
 
-    bool operator()(const Point &lhs, const Point &rhs ) const {
+    inline bool operator()(const Point &lhs, const Point &rhs ) const {
         auto lhsPoint = horizontal_first_dimension_point(lhs.first, lhs.second, width) ;
         auto rhsPoint = horizontal_first_dimension_point(rhs.first, rhs.second, width) ;
         return lhsPoint < rhsPoint;

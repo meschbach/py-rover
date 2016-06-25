@@ -45,9 +45,9 @@ inline bool operator>( const ScoredPoint &lhs, const ScoredPoint &rhs ){
 template<typename Terrain>
 struct AStarContext {
     BitBoard close_set;
-    std::set<Point> outstanding_index;
+    std::set<Point, PointLessThanComparator> outstanding_index;
     std::priority_queue< ScoredPoint, std::vector<ScoredPoint>, std::greater<ScoredPoint> > outstanding_points;
-    std::map<Point,Point> cameFrom;
+    std::map<Point,Point, PointLessThanComparator> cameFrom;
 
     AStarContext(const Terrain &board)
         : close_set(board.width, board.height)
@@ -97,9 +97,9 @@ struct AStar {
 		return (first*first) + (second*second);  //Taxi cab distance, squared
 	}
 
-	std::vector<Point> build_path(const std::map<Point,Point>& cameFrom, Point current) const {
+	std::vector<Point> build_path(const std::map<Point,Point, PointLessThanComparator>& cameFrom, Point current) const {
         std::vector<Point> data;
-        size_t cap = 4096;
+        size_t cap = 16777216;
         while( cameFrom.find( current ) != cameFrom.end() && cap != 0 ) {
             data.push_back( current );
             //TODO: This does a lookup twice
@@ -112,7 +112,7 @@ struct AStar {
 	}
 
 	std::vector<Point> findFor( Terrain &board, const Point start, const Point goal ) {
-	    unsigned int timeToLive = 1 << 20;
+	    unsigned int timeToLive = 1 << 30;
 	    if( !board.is_within(start) || board.has_wall_at(start)) {
 	        return std::vector<Point>();
 	    }
@@ -126,10 +126,10 @@ struct AStar {
 
 	    AStarContext<Terrain> context(board);
 		const std::vector<Point> neighbors = neighbors_mask;
-		std::map<Point,int> actual_score;
+		std::map<Point,int, PointLessThanComparator> actual_score;
 		actual_score[ start ] = 0;
 
-		std::map<Point,int> guessed_score;
+		std::map<Point,int, PointLessThanComparator> guessed_score;
 		guessed_score[ start ] = heuristic( start, goal );
 
         context.outstanding_point( start, guessed_score[start]);
@@ -179,8 +179,8 @@ struct AStar {
 	}
 
 	void found_better_path(AStarContext<Terrain> &context,
-	        std::map<Point,int> &actual_score,
-	        std::map<Point,int> &guessed_score,
+	        std::map<Point,int, PointLessThanComparator> &actual_score,
+	        std::map<Point,int, PointLessThanComparator> &guessed_score,
 	        const Point current,
 	        const Point neighbor,
 	        const Point goal,
@@ -191,7 +191,7 @@ struct AStar {
         context.outstanding_point(neighbor, guessed_score[neighbor]);
 	}
 
-	bool neighbor_has_lower_score( const int score, const Point& neighbor, std::map<Point,int> &actual_score ) {
+	bool neighbor_has_lower_score( const int score, const Point& neighbor, std::map<Point,int, PointLessThanComparator> &actual_score ) {
 		if( actual_score.find( neighbor ) == actual_score.end() ){
 			return true;
 		}
