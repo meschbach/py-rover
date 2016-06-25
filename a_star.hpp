@@ -91,13 +91,16 @@ struct AStarContext {
 
 template<typename Terrain>
 struct AStar {
+    using ScoredPoints = std::map< Point, int, PointLessThanComparator >;
+    using PointAssociations = std::map< Point, Point, PointLessThanComparator >;
+
 	int heuristic( const Point& a, const Point& b ) const {
 		int first = b.first - a.first;
 		int second = b.second - a.second;
 		return (first*first) + (second*second);  //Taxi cab distance, squared
 	}
 
-	std::vector<Point> build_path(const std::map<Point,Point, PointLessThanComparator>& cameFrom, Point current) const {
+	std::vector<Point> build_path(const PointAssociations& cameFrom, Point current) const {
         std::vector<Point> data;
         size_t cap = 16777216;
         while( cameFrom.find( current ) != cameFrom.end() && cap != 0 ) {
@@ -126,10 +129,10 @@ struct AStar {
 
 	    AStarContext<Terrain> context(board);
 		const std::vector<Point> neighbors = neighbors_mask;
-		std::map<Point,int, PointLessThanComparator> actual_score;
+		ScoredPoints actual_score;
 		actual_score[ start ] = 0;
 
-		std::map<Point,int, PointLessThanComparator> guessed_score;
+		ScoredPoints guessed_score;
 		guessed_score[ start ] = heuristic( start, goal );
 
         context.outstanding_point( start, guessed_score[start]);
@@ -179,8 +182,8 @@ struct AStar {
 	}
 
 	void found_better_path(AStarContext<Terrain> &context,
-	        std::map<Point,int, PointLessThanComparator> &actual_score,
-	        std::map<Point,int, PointLessThanComparator> &guessed_score,
+	        ScoredPoints &actual_score,
+	        ScoredPoints &guessed_score,
 	        const Point current,
 	        const Point neighbor,
 	        const Point goal,
@@ -191,7 +194,7 @@ struct AStar {
         context.outstanding_point(neighbor, guessed_score[neighbor]);
 	}
 
-	bool neighbor_has_lower_score( const int score, const Point& neighbor, std::map<Point,int, PointLessThanComparator> &actual_score ) {
+	bool neighbor_has_lower_score( const int score, const Point& neighbor, ScoredPoints &actual_score ) {
 		if( actual_score.find( neighbor ) == actual_score.end() ){
 			return true;
 		}
