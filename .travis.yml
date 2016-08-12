@@ -8,4 +8,4 @@ matrix:
     - compiler: clang
       env:
         CFLAGS="-std=c++1y"
-script: make
+script: env && make
