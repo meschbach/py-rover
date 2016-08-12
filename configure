@@ -1,0 +1,13 @@
+#!/bin/bash
+
+platform=`uname -a`
+if [[ "$platform" == *"Darwin"* ]] ; then
+	echo "Configuring for OSX"
+	cat >Makefile.configured <<MAKE
+	MAKE
+fi
+
+if [[ "$platform" == *"Linux"* ]] ; then
+	echo "Configuring for Linux"
+fi
+

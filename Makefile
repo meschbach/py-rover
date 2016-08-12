@@ -1,3 +1,5 @@
+include Makefile.configured
+
 GTEST_HOME?=$(HOME)/tools/googletest-test-1.7.0
 GTEST_LIBS?=$(GTEST_HOME)
 GTEST_CFLAGS?=-I$(GTEST_HOME)/include
