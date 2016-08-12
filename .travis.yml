@@ -1,5 +1,10 @@
 language: cpp
-compiler:
- - gcc
- - clang
+matrix:
+  include:
+    - compiler: gcc
+      env:
+        CFLAGS="-std=c++1y"
+    - compiler: clang
+      env:
+        CFLAGS="-std=c++1y"
 script: make
