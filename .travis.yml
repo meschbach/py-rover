@@ -1,9 +1,10 @@
 language: cpp
+sudo: false
 matrix:
   include:
     - compiler: gcc
       env:
-        CFLAGS="-std=c++1y"
+        CFLAGS=""
     - compiler: clang
       env:
         CFLAGS="-std=c++1y"
