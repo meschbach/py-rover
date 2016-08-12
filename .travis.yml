@@ -4,8 +4,8 @@ matrix:
   include:
     - compiler: gcc
       env:
-        CPP14FLAG=" --verbose "
+        CPP14_FLAG=" --verbose "
     - compiler: clang
       env:
-        CPP14FLAGS="-std=c++1y"
+        CPP14_FLAG="-std=c++1y"
 script: make
