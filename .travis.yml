@@ -4,8 +4,8 @@ matrix:
   include:
     - compiler: gcc
       env:
-        CFLAGS=""
+        CXXFLAGS=""
     - compiler: clang
       env:
-        CFLAGS="-std=c++1y"
+        CXXFLAGS="-std=c++1y"
 script: env && make
