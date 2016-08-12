@@ -1,21 +1,5 @@
 language: cpp
-sudo: required
-matrix:
-  include:
-    - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubunut-toolchain-r-test
-          packages:
-            - g++-4.9
-      env: CXX=g++-4.9
-    - compiler: clang
-      addons:
-        apt:
-          sources:
-            - ubunut-toolchain-r-test
-          packages:
-            - clang-3.6
-      env: CXX=clang-c++3.6
+compiler:
+ - gcc
+ - clang
 script: make
