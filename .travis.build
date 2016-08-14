@@ -1,5 +1,6 @@
 #!/bin/bash -xe
 
 wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
-tar zxvf release-1.7.0.tgz
-ls
+tar zxvf release-1.7.0.tar.gz
+( cd googletest-release-1.7.0  && cmake . && make )
+GTEST_HOME=$PWD/googletest-release-1.7.0 make
