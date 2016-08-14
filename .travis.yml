@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
       - cmake
+      - gcc-4.8
 matrix:
   include:
     - compiler: gcc
