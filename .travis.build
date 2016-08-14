@@ -1,0 +1,5 @@
+#!/bin/bash -xe
+
+wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz -o gtest-1.7.0.tgz
+tar zxvf gtest-1.7.0.tgz
+ls
