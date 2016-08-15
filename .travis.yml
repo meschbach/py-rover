@@ -6,12 +6,13 @@ addons:
     packages:
       - cmake
       - gcc-4.8
+      - "libc++-dev"
 matrix:
   include:
     - compiler: gcc
       env:
-        CPP14_FLAG=" --verbose "
+        CPP14_FLAG=" --std=c++14"
     - compiler: clang
       env:
-        CPP14_FLAG="-std=c++1y"
+        CPP14_FLAG="-std=c++1y -stdlib=libc++"
 script: ./.travis.build
