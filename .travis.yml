@@ -16,5 +16,5 @@ matrix:
     - compiler: clang
       env:
         CC="clang++ -std=c++1y -stdlib=libc++"
-        CPP14_FLAG="-std=c++1y"
+        CPP14_FLAG="-std=c++1y -stdlib=libc++"
 script: ./.travis.build
