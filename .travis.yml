@@ -5,12 +5,13 @@ addons:
   apt:
     packages:
       - cmake
-      - gcc-4.8
+      - gcc-4.9
       - "libc++-dev"
 matrix:
   include:
     - compiler: gcc
       env:
+        CC="gcc-4.9"
         CPP14_FLAG="-std=c++14"
     - compiler: clang
       env:
