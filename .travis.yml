@@ -11,7 +11,7 @@ matrix:
   include:
     - compiler: gcc
       env:
-        CPP14_FLAG=" --std=c++14"
+        CPP14_FLAG="-std=c++14"
     - compiler: clang
       env:
         CPP14_FLAG="-std=c++1y -stdlib=libc++"
